@@ -1,37 +1,48 @@
 const form = document.querySelector('form');
 const email = document.querySelector('#email');
+const emailError = document.querySelector('.error');
 const errorIcon = document.querySelector('.error-icon');
-const small = document.querySelector('small');
 
-// Checks if email is valid
-function isValidEmail(email) {
-  const re =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(String(email).toLowerCase());
-}
+// https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation
 
-// Shows error if email is not valid
+// Show error
 function showError() {
   errorIcon.classList.remove('hidden');
-  small.classList.remove('hidden');
+  if (email.validity.valueMissing) {
+    // If the field is empty, display:
+    emailError.textContent = 'Please provide an email';
+  } else if (email.validity.typeMismatch) {
+    // If the field doesn't contain a valid email address, display:
+    emailError.textContent = 'Please provide a valid email';
+  }
+
+  // Set the styling:
+  emailError.className = 'error active';
 }
 
-// Shows success if email is valid
-function showSuccess() {
-  email.classList.add('success');
-}
+// EVENT LISTENERS:
 
-// Event listener
-form.addEventListener('submit', event => {
-  event.preventDefault();
-
-  if (email.value === '' || !isValidEmail(email.value)) {
-    small.textContent = 'Please provide a valid email';
-    showError();
+// Input field
+email.addEventListener('input', event => {
+  // Check if form field is valid
+  if (email.validity.valid) {
+    // If there's an error message visible and if the field is valid, remove the error message:
+    emailError.textContent = ''; // resets the content of the message
+    emailError.className = 'error'; //resets the visual state of the message
+    errorIcon.className = 'hidden';
   } else {
-    showSuccess();
-    errorIcon.classList.add('hidden');
-    small.classList.add('hidden');
-    email.value = '';
+    // If there's still an error, show the correct error
+    showError();
+  }
+});
+
+// Form
+form.addEventListener('submit', event => {
+  // If the email field is valid, let the form submi
+  if (!email.validity.valid) {
+    // If it isn't, display an appropriate error message
+    showError();
+    // Then prevent the form from being sent by cancelling the event
+    event.preventDefault();
   }
 });
