@@ -30,6 +30,8 @@ form.addEventListener('submit', event => {
     showError();
   } else {
     showSuccess();
+    errorIcon.classList.add('hidden');
+    small.classList.add('hidden');
     email.value = '';
   }
 });
